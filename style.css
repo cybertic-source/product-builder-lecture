@@ -116,11 +116,28 @@ h2 { border-bottom: 2px solid var(--btn-bg); padding-bottom: 10px; margin: 0; }
     justify-content: center;
     align-items: center;
     gap: 8px;
-    padding: 10px;
+    padding: 12px;
     background: rgba(0,0,0,0.03);
     border-radius: 50px;
     position: relative;
+    margin-bottom: 5px;
 }
+
+.strategy-label {
+    font-size: 11px;
+    font-weight: bold;
+    background: #6c757d;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 5px;
+    min-width: 90px;
+    text-align: center;
+}
+
+.strategy-hot { background-color: #ff4757; }
+.strategy-cold { background-color: #2f3542; }
+.strategy-random { background-color: #747d8c; }
 
 .ball {
     width: 35px;

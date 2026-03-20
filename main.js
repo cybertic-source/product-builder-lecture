@@ -40,7 +40,7 @@ function getFrequency() {
 renderHistory();
 renderWinningInputs();
 
-// --- 3. 당첨 번호 저장 (회차 포함) ---
+// --- 3. 당첨 번호 저장 ---
 saveWinBtn.addEventListener('click', () => {
     const round = parseInt(document.getElementById('win-round').value);
     if (!round) {
@@ -63,7 +63,6 @@ saveWinBtn.addEventListener('click', () => {
     }
     inputs.sort((a, b) => a - b);
 
-    // 중복 회차 체크
     const existingIdx = winningHistory.findIndex(w => w.round === round);
     if (existingIdx !== -1) {
         if (!confirm(`${round}회차 데이터가 이미 있습니다. 덮어씌울까요?`)) return;
@@ -86,7 +85,7 @@ function renderWinningInputs() {
     }
 }
 
-// --- 4. 번호 생성 및 히스토리 삭제 ---
+// --- 4. 번호 생성 ---
 generateBtn.addEventListener('click', () => {
     const useHot = document.getElementById('method-hot').checked;
     const useCold = document.getElementById('method-cold').checked;
@@ -98,14 +97,27 @@ generateBtn.addEventListener('click', () => {
 
     for (let i = 0; i < 5; i++) {
         let set = [];
-        let strategy = 'random';
-        if (useHot && i < 2) strategy = 'hot';
-        else if (useCold && i >= 2 && i < 4) strategy = 'cold';
+        let strategyKey = 'random';
+        let strategyName = '랜덤/혼합';
+        
+        // 전략 할당 (5개 조합)
+        if (useHot && i < 2) {
+            strategyKey = 'hot';
+            strategyName = '자주 나온 번호';
+        } else if (useCold && i >= 2 && i < 4) {
+            strategyKey = 'cold';
+            strategyName = '드물게 나온 번호';
+        }
         
         while (set.length < 6) {
-            let num = (strategy === 'hot') ? getWeightedRandom(frequency, true) : 
-                      (strategy === 'cold') ? getWeightedRandom(frequency, false) : 
-                      Math.floor(Math.random() * 45) + 1;
+            let num;
+            if (strategyKey === 'hot' && winningHistory.length > 0) {
+                num = getWeightedRandom(frequency, true);
+            } else if (strategyKey === 'cold' && winningHistory.length > 0) {
+                num = getWeightedRandom(frequency, false);
+            } else {
+                num = Math.floor(Math.random() * 45) + 1;
+            }
 
             if (!set.includes(num)) set.push(num);
             if (useEvenOdd && set.length === 6) {
@@ -114,7 +126,7 @@ generateBtn.addEventListener('click', () => {
             }
         }
         set.sort((a, b) => a - b);
-        recommendations.push(set);
+        recommendations.push({ numbers: set, strategyKey, strategyName });
     }
 
     renderRecommendations(recommendations);
@@ -129,7 +141,6 @@ generateBtn.addEventListener('click', () => {
     renderHistory();
 });
 
-// 개별 삭제 함수
 function deleteHistoryItem(id) {
     if (!confirm('이 내역을 삭제하시겠습니까?')) return;
     myHistory = myHistory.filter(item => item.id !== id);
@@ -137,7 +148,6 @@ function deleteHistoryItem(id) {
     renderHistory();
 }
 
-// 전체 삭제
 clearHistoryBtn.addEventListener('click', () => {
     if (!confirm('모든 추천 내역을 삭제하시겠습니까?')) return;
     myHistory = [];
@@ -154,20 +164,46 @@ function getWeightedRandom(freq, isHot) {
 }
 
 // --- 5. 렌더링 ---
+function createLottoRow(numbers, strategyName, strategyKey, targetWin) {
+    const row = document.createElement('div');
+    row.className = 'lotto-row';
+    
+    if (strategyName) {
+        const label = document.createElement('span');
+        label.className = `strategy-label strategy-${strategyKey}`;
+        label.textContent = strategyName;
+        row.appendChild(label);
+    }
+
+    let matchCount = 0;
+    numbers.forEach(num => {
+        const ball = document.createElement('div');
+        ball.className = 'ball';
+        ball.textContent = num;
+        ball.style.backgroundColor = getBallColor(num);
+        ball.style.color = getBallTextColor(num);
+        
+        if (targetWin && targetWin.numbers.includes(num)) {
+            ball.style.border = '2px solid red';
+            matchCount++;
+        }
+        row.appendChild(ball);
+    });
+
+    if (matchCount >= 3) {
+        const badge = document.createElement('span');
+        badge.className = 'match-count';
+        badge.textContent = `${matchCount}개 일치!`;
+        row.appendChild(badge);
+    }
+    
+    return row;
+}
+
 function renderRecommendations(sets) {
     recommendationsDiv.innerHTML = '';
     sets.forEach(set => {
-        const row = document.createElement('div');
-        row.className = 'lotto-row';
-        set.forEach(num => {
-            const ball = document.createElement('div');
-            ball.className = 'ball';
-            ball.textContent = num;
-            ball.style.backgroundColor = getBallColor(num);
-            ball.style.color = getBallTextColor(num);
-            row.appendChild(ball);
-        });
-        recommendationsDiv.appendChild(row);
+        recommendationsDiv.appendChild(createLottoRow(set.numbers, set.strategyName, set.strategyKey));
     });
 }
 
@@ -179,48 +215,21 @@ function renderHistory() {
         
         const header = document.createElement('div');
         header.className = 'history-item-header';
-        
-        const info = document.createElement('div');
-        info.innerHTML = `<span class="round-badge">${record.round}회차 추천</span> <span class="history-date">${record.date}</span>`;
+        header.innerHTML = `<div><span class="round-badge">${record.round}회차 추천</span> <span class="history-date">${record.date}</span></div>`;
         
         const delBtn = document.createElement('button');
         delBtn.className = 'btn-delete-item';
         delBtn.innerHTML = '&times;';
         delBtn.onclick = () => deleteHistoryItem(record.id);
-        
-        header.appendChild(info);
         header.appendChild(delBtn);
         item.appendChild(header);
 
+        const targetWin = winningHistory.find(w => w.round === record.round || (record.round === '미정' && winningHistory.length > 0));
+
         record.sets.forEach(set => {
-            const row = document.createElement('div');
-            row.className = 'lotto-row';
+            const row = createLottoRow(set.numbers, set.strategyName, set.strategyKey, targetWin);
             row.style.transform = 'scale(0.9)';
-            
-            // 입력된 회차 중 해당 회차의 당첨번호 찾기
-            const targetWin = winningHistory.find(w => w.round === record.round || (record.round === '미정' && winningHistory.length > 0));
-            let matchCount = 0;
-
-            set.forEach(num => {
-                const ball = document.createElement('div');
-                ball.className = 'ball';
-                ball.textContent = num;
-                ball.style.backgroundColor = getBallColor(num);
-                ball.style.color = getBallTextColor(num);
-                
-                if (targetWin && targetWin.numbers.includes(num)) {
-                    ball.style.border = '2px solid red';
-                    matchCount++;
-                }
-                row.appendChild(ball);
-            });
-
-            if (matchCount >= 3) {
-                const badge = document.createElement('span');
-                badge.className = 'match-count';
-                badge.textContent = `${matchCount}개 일치!`;
-                row.appendChild(badge);
-            }
+            row.style.margin = '0 auto 5px';
             item.appendChild(row);
         });
         historyList.appendChild(item);
