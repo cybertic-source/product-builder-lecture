@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lotto Number Recommendation</title>
+    <title>로또 번호 통계 추천 시스템</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,9 +11,37 @@
         <div class="header-actions">
             <button id="theme-toggle">Dark Mode</button>
         </div>
-        <h1>Lotto Number Recommendation</h1>
-        <button id="generate">Generate Numbers</button>
-        <div id="numbers"></div>
+        <h1>로또 추천 시스템</h1>
+        
+        <div class="stats-section">
+            <h2>통계 분석 추천 (5개 조합)</h2>
+            <div class="method-selector">
+                <label><input type="checkbox" id="method-hot" checked> 자주 나온 번호</label>
+                <label><input type="checkbox" id="method-cold" checked> 드물게 나온 번호</label>
+                <label><input type="checkbox" id="method-evenodd" checked> 홀짝 비율</label>
+            </div>
+            <button id="generate">번호 생성하기</button>
+            <div id="recommendations" class="lotto-list"></div>
+        </div>
+
+        <div class="winning-input-section">
+            <h3>최신 당첨 번호 입력</h3>
+            <p><small>(통계 업데이트를 위해 이번 주 당첨번호를 입력하세요)</small></p>
+            <div class="input-group">
+                <input type="number" id="win-1" min="1" max="45" placeholder="1">
+                <input type="number" id="win-2" min="1" max="45" placeholder="2">
+                <input type="number" id="win-3" min="1" max="45" placeholder="3">
+                <input type="number" id="win-4" min="1" max="45" placeholder="4">
+                <input type="number" id="win-5" min="1" max="45" placeholder="5">
+                <input type="number" id="win-6" min="1" max="45" placeholder="6">
+                <button id="save-win">당첨 확인 & 저장</button>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <h2>나의 추천 내역</h2>
+            <div id="history-list" class="history-list"></div>
+        </div>
     </div>
     <script src="main.js"></script>
 </body>

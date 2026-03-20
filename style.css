@@ -1,74 +1,148 @@
 :root {
-    --bg-color: #f0f0f0;
-    --text-color: #333;
-    --container-bg: #fff;
-    --btn-bg: #4CAF50;
-    --btn-text: #fff;
+    --bg-color: #f8f9fa;
+    --text-color: #212529;
+    --container-bg: #ffffff;
+    --btn-bg: #007bff;
+    --btn-text: #ffffff;
+    --border-color: #dee2e6;
+    --ball-color: #fbc02d;
+    --accent-color: #e83e8c;
 }
 
 body.dark-mode {
-    --bg-color: #1a1a1a;
-    --text-color: #f0f0f0;
-    --container-bg: #2d2d2d;
-    --btn-bg: #45a049;
-    --btn-text: #fff;
+    --bg-color: #121212;
+    --text-color: #e9ecef;
+    --container-bg: #1e1e1e;
+    --btn-bg: #375a7f;
+    --btn-text: #ffffff;
+    --border-color: #444;
+    --ball-color: #ffca28;
+    --accent-color: #ff79c6;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
+    margin: 0;
+    padding: 20px;
     transition: background-color 0.3s, color 0.3s;
 }
 
 .container {
-    text-align: center;
-    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
     background-color: var(--container-bg);
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: background-color 0.3s;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
 }
 
 .header-actions {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 1rem;
 }
 
 #theme-toggle {
     padding: 8px 16px;
-    font-size: 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-color);
     cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    background-color: var(--text-color);
-    color: var(--bg-color);
-    transition: 0.3s;
 }
 
-#generate {
-    padding: 12px 24px;
+h1 { text-align: center; margin-bottom: 30px; }
+h2 { border-bottom: 2px solid var(--btn-bg); padding-bottom: 10px; margin-top: 40px; }
+
+.stats-section, .history-section, .winning-input-section {
+    margin-bottom: 30px;
+}
+
+.method-selector {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#generate, #save-win {
+    width: 100%;
+    padding: 15px;
     font-size: 18px;
-    cursor: pointer;
-    background-color: var(--btn-bg);
-    color: var(--btn-text);
+    font-weight: bold;
     border: none;
     border-radius: 8px;
-    transition: 0.3s;
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    cursor: pointer;
+    transition: transform 0.1s;
 }
 
-#generate:hover {
-    opacity: 0.9;
+#generate:active { transform: scale(0.98); }
+
+.lotto-list {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-#numbers {
-    margin-top: 30px;
-    font-size: 32px;
+.lotto-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    background: rgba(0,0,0,0.03);
+    border-radius: 50px;
+}
+
+.ball {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: var(--ball-color);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-weight: bold;
+    font-size: 14px;
+    box-shadow: inset -3px -3px 5px rgba(0,0,0,0.2);
 }
+
+.input-group {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.input-group input {
+    width: 45px;
+    height: 45px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--container-bg);
+    color: var(--text-color);
+    font-size: 16px;
+}
+
+.history-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.history-item {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-date { font-size: 12px; color: #888; }
+.match-count { font-weight: bold; color: var(--accent-color); font-size: 14px; }
